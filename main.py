@@ -7,9 +7,11 @@
 # https://www.youtube.com/watch?v=VWjCv_IDuyQ&list=PLe-iIMbo5JOJm6DRTjhleHojroS-Bbocr&index=4
 
 # ЗАМЕЧАНИЯ:
-# message.reply - ответить на сообщение
-# message.answer - послать сообщение
+# message.reply - ответить на сообщение. Выводится в чате вопрос и ответ на него
+# message.answer - послать сообщение. Вопрос не дублируется.
 # message.delete - удалить сообщение пользователя из чата
+# Хендлеры типа @dp.message_handler() должны ставиться ПОСЛЕ хендлеров типа @dp.message_handler(commands='count').
+# Т.к они срабатывают при любой команде
 
 # ПРАКТИКА:
 # Напишите бота, который будет отвечать на сообщение пользователя рандомным символом алфавита.
@@ -53,7 +55,8 @@ async def command(message: types.Message):
 
 @dp.message_handler(commands='description')
 async def command(message: types.Message):
-    await message.reply(text=DESCRIPTION_COMMAND)
+    await message.answer(text=DESCRIPTION_COMMAND)
+    await message.delete()
 
 
 @dp.message_handler(commands='count')
@@ -68,19 +71,22 @@ async def command(message: types.Message):
     await message.reply(text=cnt)
 
 
-# @dp.message_handler()  # обрабатываем входящие сообщения
-async def echo_upper(message: types.Message):  # объект message класса message
+# Хендлеры типа @dp.message_handler() должны ставиться ПОСЛЕ хендлеров типа @dp.message_handler(commands='count').
+# Т.к они срабатывают при любой команде
+
+@dp.message_handler()  # обрабатываем входящие сообщения
+async def command(message: types.Message):  # объект message класса message
     """
     Бот отвечает на сообщение пользователя рандомным символом алфавита
     :param message: сообщение
     :return: случайная буква из текстового сообщения
     """
     answ = message.text  # сообщение пользователя
-    await message.answer(random.choice(answ))  # случайная буква из текстового сообщения
+    await message.reply(random.choice(answ))  # случайная буква из текстового сообщения
 
 
-@dp.message_handler()  # обрабатываем входящие сообщения
-async def echo_upper(message: types.Message):  # объект message класса message
+# @dp.message_handler()  # обрабатываем входящие сообщения
+async def command(message: types.Message):  # объект message класса message
     """
     Бот отвечает YES, если сообщение содержит число 0 и NO - в противном случае
     :param message: сообщение
